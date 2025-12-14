@@ -1,0 +1,7 @@
+export { fetchJSON };
+
+async function fetchJSON(what) {
+    const response = await fetch(`./json/${what}.json`);
+    const data = await response.json();
+    return data;
+}
