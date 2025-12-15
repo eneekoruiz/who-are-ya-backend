@@ -62,7 +62,7 @@ function autocomplete(inp, game) {
 
             b = document.createElement("DIV");
             b.classList.add('flex', 'items-start', 'gap-x-3', 'leading-tight', 'uppercase', 'text-sm');
-            b.innerHTML = `<img src="https://cdn.sportmonks.com/images/soccer/teams/${filteredPlayers[i].teamId % 32}/${filteredPlayers[i].teamId}.png"  width="28" height="28">`;
+            b.innerHTML = `<img src="/images/team_logos/${filteredPlayers[i].teamId}.png"  width="28" height="28">`;
             const result = parse(filteredPlayers[i].name, val);
 
             /*make the matching letters bold:*/

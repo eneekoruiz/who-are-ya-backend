@@ -105,16 +105,17 @@ let setupRows = function (game, status) {
     }
 
     function setContent(guess) {
-        console.log(guess);
         return [
-            `<img src="https://playfootball.games/media/nations/${guess.nationality.toLowerCase()}.svg" alt="" style="width: 60%;">`,
-            `<img src="https://playfootball.games/media/competitions/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
-            `<img src="https://cdn.sportmonks.com/images/soccer/teams/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
+            `<img src="./images/flags/${guess.nationality.toLowerCase()}.svg" alt="" style="width: 60%;">`,
+            `<img src="./images/leagues/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
+            `<img src="./images/players/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
             `${guess.position}`,
             `${getAge(guess.birthdate)}`,
             `<span style="white-space: nowrap; font-size: 1rem;">#${guess.number}</span>`
         ]
     }
+
+
 
     function showContent(content, guess) {
         let fragments = '', s = '';
