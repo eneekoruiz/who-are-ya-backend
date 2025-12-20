@@ -1,10 +1,2 @@
-# Node
-node_modules/
+node_modules
 .env
-
-# IDEs
-.idea/
-.vscode/
-
-# Logs
-npm-debug.log*
