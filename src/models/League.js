@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-
+//const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const leagueSchema = new mongoose.Schema({
     id: {
         type: String,
@@ -25,4 +25,4 @@ const leagueSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('League', leagueSchema);
+export default mongoose.model('League', leagueSchema);

@@ -1,18 +1,19 @@
-import express from 'express';
-import connectDB from './src/config/database.js';
+// server.js
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import app from './src/app.js';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Datu-basea konektatu eta zerbitzaria abiarazi
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-});
-
-// Middleware eta routes hemen gehitu
-app.use(express.json());
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('MongoDB connected');
+    app.listen(PORT, () =>
+      console.log(`Server running on http://localhost:${PORT}`)
+    );
+  })
+  .catch(err => {
+    console.error('DB connection error:', err);
+  });

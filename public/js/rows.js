@@ -108,7 +108,7 @@ let setupRows = function (game, status) {
         return [
             `<img src="./images/flags/${guess.nationality.toLowerCase()}.svg" alt="" style="width: 60%;">`,
             `<img src="./images/leagues/${leagueToFlag(guess.leagueId)}.png" alt="" style="width: 60%;">`,
-            `<img src="./images/players/${guess.teamId % 32}/${guess.teamId}.png" alt="" style="width: 60%;">`,
+            `<img src="./images/team_logos/${guess.teamId}.png" alt="" style="width: 60%;">`,
             `${guess.position}`,
             `${getAge(guess.birthdate)}`,
             `<span style="white-space: nowrap; font-size: 1rem;">#${guess.number}</span>`

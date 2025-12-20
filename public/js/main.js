@@ -83,7 +83,7 @@ Promise.all([fetchJSON("fullplayers25"), fetchJSON("solution25")]).then(
     console.log("Solución del día:", game.solution);
     console.log("Guesses cargadas:", game.guesses);
 
-    document.getElementById("mistery").src = `./images/players/${game.solution.id % 32}/${game.solution.id}.png`;
+    document.getElementById("mistery").src = `./images/players/${game.solution.id}.png`;
       // YOUR CODE HERE
       let addRow = setupRows( /* THIS NEEDS A PARAMETER */ game);
       // get myInput object...
