@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Jugadores</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Estilos básicos */
+        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Gestión de Jugadores</h1>
+    
+    <!-- Botón para crear nuevo -->
+    <a href="/admin/players/new">Nuevo Jugador</a>
+    
+    <!-- Mensajes de feedback -->
+    <div id="message-container"></div>
+    
+    <!-- Tabla de jugadores -->
+    <table id="players-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Equipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Se llenará con JavaScript -->
+        </tbody>
+    </table>
+    
+    <script>
+        // CONSUMIR LA API REST - Esto es lo que significa "consumir el API"
+        
+        // 1. Cargar jugadores al iniciar
+        async function loadPlayers() {
+            try {
+                const response = await axios.get('/api/players');
+                const players = response.data;
+                
+                const tbody = document.querySelector('#players-table tbody');
+                tbody.innerHTML = '';
+                
+                players.forEach(player => {
+                    const row = `
+                        <tr>
+                            <td>${player.id}</td>
+                            <td>${player.name}</td>
+                            <td>${player.team?.name || 'Sin equipo'}</td>
+                            <td>
+                                <a href="/admin/players/edit/${player.id}">Editar</a>
+                                <button onclick="deletePlayer(${player.id})">Eliminar</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                showMessage('Error cargando jugadores', 'error');
+            }
+        }
+        
+        // 2. Eliminar jugador
+        async function deletePlayer(id) {
+            if (!confirm('¿Seguro que quieres eliminar este jugador?')) return;
+            
+            try {
+                await axios.delete(`/api/players/${id}`);
+                showMessage('Jugador eliminado correctamente', 'success');
+                loadPlayers(); // Recargar la lista
+            } catch (error) {
+                showMessage('Error eliminando jugador', 'error');
+            }
+        }
+        
+        // 3. Mostrar mensajes de feedback
+        function showMessage(text, type) {
+            const container = document.getElementById('message-container');
+            container.innerHTML = `
+                <div class="message ${type}">${text}</div>
+            `;
+            setTimeout(() => container.innerHTML = '', 3000);
+        }
+        
+        // Cargar jugadores cuando la página se cargue
+        window.onload = loadPlayers;
+    </script>
+</body>
+</html>

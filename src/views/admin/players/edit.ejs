@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Jugador</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Editar Jugador</h1>
+    
+    <form id="edit-form">
+        <div>
+            <label>Nombre:</label>
+            <input type="text" id="name" required>
+        </div>
+        
+        <div>
+            <label>Posición:</label>
+            <input type="text" id="position" required>
+        </div>
+        
+        <button type="submit">Actualizar</button>
+        <a href="/admin/players">Cancelar</a>
+    </form>
+    
+    <div id="message"></div>
+    
+    <script>
+        const playerId = '<%= playerId %>';
+        
+        // 1. Cargar datos del jugador
+        async function loadPlayer() {
+            try {
+                const response = await axios.get(`/api/players/${playerId}`);
+                const player = response.data;
+                
+                document.getElementById('name').value = player.name;
+                document.getElementById('position').value = player.position;
+            } catch (error) {
+                document.getElementById('message').innerHTML = 
+                    `<p style="color: red;">Error cargando jugador: ${error.message}</p>`;
+            }
+        }
+        
+        // 2. Actualizar jugador
+        document.getElementById('edit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const updatedData = {
+                name: document.getElementById('name').value,
+                position: document.getElementById('position').value
+            };
+            
+            try {
+                // CONSUMIR API REST para actualizar
+                await axios.put(`/api/players/${playerId}`, updatedData);
+                
+                document.getElementById('message').innerHTML = 
+                    '<p style="color: green;">Jugador actualizado correctamente</p>';
+                
+            } catch (error) {
+                document.getElementById('message').innerHTML = 
+                    `<p style="color: red;">Error: ${error.response?.data?.message || error.message}</p>`;
+            }
+        });
+        
+        // Cargar datos al iniciar
+        window.onload = loadPlayer;
+    </script>
+</body>
+</html>

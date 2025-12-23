@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+</head>
+<body>
+  <h1>Register</h1>
+
+  <% if (error) { %>
+    <p style="color:red"><%= error %></p>
+  <% } %>
+
+  <form method="POST" action="/register">
+    izena:
+    <input name="name" required />
+    abizena:
+    <input name="lastName" required />
+    email:
+    <input type="email" name="email" required />
+    pasahitza:
+    <input type="password" name="password" required />
+    <button type="submit">Register</button>
+  </form>
+
+  <a href="/login">Login</a>
+</body>
+</html>

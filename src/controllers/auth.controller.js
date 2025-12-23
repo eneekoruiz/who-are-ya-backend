@@ -60,3 +60,18 @@ export const logout = (req, res) => {
     res.json({ message: 'Logged out' });
   });
 };
+
+// En src/controllers/auth.controller.js
+export const getSession = (req, res) => {
+  if (req.session.user) {
+    res.json({
+      authenticated: true,
+      user: req.session.user
+    });
+  } else {
+    res.json({
+      authenticated: false,
+      message: 'No hay sesión activa'
+    });
+  }
+};

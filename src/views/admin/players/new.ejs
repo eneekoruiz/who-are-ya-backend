@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nuevo Jugador</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Crear Nuevo Jugador</h1>
+    
+    <form id="create-form">
+        <div>
+            <label>Nombre:</label>
+            <input type="text" name="name" required>
+        </div>
+        
+        <div>
+            <label>Posición:</label>
+            <input type="text" name="position" required>
+        </div>
+        
+        <div>
+            <label>Equipo ID:</label>
+            <input type="number" name="teamId">
+        </div>
+        
+        <button type="submit">Crear</button>
+        <a href="/admin/players">Cancelar</a>
+    </form>
+    
+    <div id="message"></div>
+    
+    <script>
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const playerData = Object.fromEntries(formData);
+            
+            try {
+                // CONSUMIR API REST para crear jugador
+                const response = await axios.post('/api/players', playerData);
+                
+                document.getElementById('message').innerHTML = 
+                    '<p style="color: green;">Jugador creado correctamente</p>';
+                
+                // Redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = '/admin/players';
+                }, 2000);
+                
+            } catch (error) {
+                document.getElementById('message').innerHTML = 
+                    `<p style="color: red;">Error: ${error.response?.data?.message || error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

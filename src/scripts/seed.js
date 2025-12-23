@@ -1,10 +1,10 @@
-const connectDB = require('../src/config/database.js');
-const fs = require('fs');
-const path = require('path');
-const League = require('../src/models/League.js');
-const Team = require('../src/models/Team.js');
-const Player = require('../src/models/Player.js');
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import League from '../models/League.js';
+import Team from '../models/Team.js';
+import Player from '../models/Player.js';
+import connectDB from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
 
 const seedDatabase = async () => {
     try {

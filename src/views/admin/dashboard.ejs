@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admuinistrazio panela</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 15px; border-radius: 5px; }
+        .menu { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .menu a { margin-right: 15px; color: #3498db; text-decoration: none; }
+        .user-info { background: #ecf0f1; padding: 10px; margin-bottom: 15px; border-radius: 5px; }
+        .card { background: white; padding: 20px; margin: 15px 0; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { background: #3498db; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-danger { background: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Administrazio panela - Who Are Ya</h1>
+    </div>
+    
+    <div class="user-info">
+        <strong>Erabiltzailea:</strong> <%= user.username %> | 
+        <strong>Email:</strong> <%= user.email %> | 
+        <strong>Rola:</strong> <%= user.role %> |
+        <a href="/api/auth/logout" onclick="return confirm('Saioa amaitu?')" style="color: #e74c3c;">Logout</a>
+    </div>
+    
+    <div class="menu">
+        <h3>Ekintzak</h3>
+        <a href="/admin/players" class="btn">Jokalariak ikusi</a>
+        <a href="/admin/players/new" class="btn">Jokalari berria</a>
+        <a href="/api/players" class="btn">Jokalari API ikusi</a>
+    </div>
+    
+    <script>
+        // Verificar que el usuario es admin
+        if ('<%= user.role %>' !== 'admin') {
+            alert('Error: Administrazio baimenik ez');
+            window.location.href = '/api/auth/login-page';
+        }
+    </script>
+</body>
+</html>
