@@ -1,30 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Nuevo Jugador</title>
+    <title>Jokalari berria</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+    body { font-family: Arial, sans-serif; margin: 20px;  text-align: center; margin: 20px;  }
+    label { margin-right: 10px; }
+    input, select { margin-right: 20px; padding: 5px; }
+    button { padding: 5px 10px; margin-right: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    .message { margin-top: 15px; color: red; }
+  </style>
 </head>
 <body>
-    <h1>Crear Nuevo Jugador</h1>
+    <h1>Jokalari berria sortu</h1>
     
     <form id="create-form">
+        <input type="hidden" name="id" id="playerId">
+
         <div>
-            <label>Nombre:</label>
+            <label>Izena:</label>
             <input type="text" name="name" required>
         </div>
         
         <div>
-            <label>Posición:</label>
-            <input type="text" name="position" required>
+            <label>Jaioteguna:</label>
+            <input type="date" name="birthDate" required>
         </div>
-        
+
         <div>
-            <label>Equipo ID:</label>
-            <input type="number" name="teamId">
+            <label>Herrialdea:</label>
+            <input type="text" name="nationality" required>
+        </div>
+
+        <label>Taldea:</label>
+        <select name="teamId" required>
+            <option value="" disabled selected>-- Aukeratu taldea --</option>
+            <% teams.forEach(team => { %>
+                <option value="<%= team._id %>"><%= team.name %></option>
+            <% }) %>
+        </select>
+
+        <div>
+        <label>Liga:</label>
+        <select name="leagueId" required>
+            <option value="" disabled selected>-- Aukeratu liga --</option>
+            <% leagues.forEach(league => { %>
+                <option value="<%= league._id %>"><%= league.name %></option>
+            <% }) %>
+        </select>
         </div>
         
-        <button type="submit">Crear</button>
-        <a href="/admin/players">Cancelar</a>
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    const response = await axios.get('/api/leagues');
+                    const leagues = response.data;
+                    const select = document.getElementById('leagueSelect');
+                    
+                    leagues.forEach(league => {
+                        const option = document.createElement('option');
+                        option.value = league._id;
+                        option.textContent = league.name;
+                        select.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Errorea ligak kargatzean:", error);
+                }
+            });
+        </script>
+
+        <label>Posizioa:</label>
+        <select name="position" required>
+            <option value="" disabled selected>-- Aukeratu posizioa --</option>
+            <option value="GK">Atezaina</option>
+            <option value="DF">Defentsa</option>
+            <option value="MF">Erdilaria</option>
+            <option value="FW">Aurrekaria</option>
+        </select>
+
+        <div>
+            <label>Zenbakia:</label>
+            <input type="number" name="number" required>
+        </div>
+        
+        <button type="submit">Sortu</button>
+
+        <a href="/admin/"><button type="button">Itzuli panelera</button></a>
+
     </form>
     
     <div id="message"></div>
@@ -33,20 +98,32 @@
         document.getElementById('create-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const lastPlayerResponse = await axios.get('/api/players?sortBy=id&order=desc&limit=1');
+            const lastPlayer = lastPlayerResponse.data[0];
+            const newId = lastPlayer ? lastPlayer.id + 1 : 1;
+
+            document.getElementById('playerId').value = newId;
+            
             const formData = new FormData(e.target);
             const playerData = Object.fromEntries(formData);
-            
+
+            playerData.birthDate = new Date(playerData.birthDate).toISOString();
+            playerData.id = Number(playerData.id);
+            playerData.number = Number(playerData.number);
+
             try {
-                // CONSUMIR API REST para crear jugador
                 const response = await axios.post('/api/players', playerData);
                 
                 document.getElementById('message').innerHTML = 
-                    '<p style="color: green;">Jugador creado correctamente</p>';
+                    '<p style="color: green;">Jokalari sortu da</p>';
+
+                console.log(playerData);
                 
-                // Redirigir después de 2 segundos
+                /*
                 setTimeout(() => {
-                    window.location.href = '/admin/players';
+                    window.location.href = '/admin/';
                 }, 2000);
+                */
                 
             } catch (error) {
                 document.getElementById('message').innerHTML = 

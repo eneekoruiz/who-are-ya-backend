@@ -1,70 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Editar Jugador</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Editatu Jokalaria</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px;  text-align: center; margin: 20px;  }
+    label { margin-right: 10px; }
+    input, select { margin-right: 20px; padding: 5px; }
+    button { padding: 5px 10px; margin-right: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    .message { margin-top: 15px; color: red; }
+  </style>
 </head>
 <body>
-    <h1>Editar Jugador</h1>
-    
-    <form id="edit-form">
-        <div>
-            <label>Nombre:</label>
-            <input type="text" id="name" required>
-        </div>
-        
-        <div>
-            <label>Posición:</label>
-            <input type="text" id="position" required>
-        </div>
-        
-        <button type="submit">Actualizar</button>
-        <a href="/admin/players">Cancelar</a>
-    </form>
-    
-    <div id="message"></div>
-    
-    <script>
-        const playerId = '<%= playerId %>';
-        
-        // 1. Cargar datos del jugador
-        async function loadPlayer() {
-            try {
-                const response = await axios.get(`/api/players/${playerId}`);
-                const player = response.data;
-                
-                document.getElementById('name').value = player.name;
-                document.getElementById('position').value = player.position;
-            } catch (error) {
-                document.getElementById('message').innerHTML = 
-                    `<p style="color: red;">Error cargando jugador: ${error.message}</p>`;
-            }
+  <h1>Editatu Jokalaria</h1>
+
+  <form action="/api/players/<%= player._id %>" method="POST" id="edit-player-form">
+    <input type="hidden" name="_method" value="PUT" /> 
+
+    <div>
+    <label for="name">Izena:</label>
+    <input type="text" id="name" name="name" value="<%= player.name %>" required />
+    </div>
+
+    <div>
+    <label for="birthDate">Jaioteguna:</label>
+    <input type="date" id="birthDate" name="birthDate" value="<%= player.birthDate ? player.birthDate.toISOString().split('T')[0] : '' %>" />
+    </div>
+
+    <div>
+    <label for="nationality">Herrialdea:</label>
+    <input type="text" id="nationality" name="nationality" value="<%= player.nationality %>" />
+    </div>
+
+    <div>
+    <label for="teamId">Taldea:</label>
+    <select name="teamId" id="teamId">
+        <% teams.forEach(team => { %>
+        <option value="<%= team._id %>" <%= player.teamId && player.teamId._id.equals(team._id) ? 'selected' : '' %>>
+            <%= team.name %>
+        </option>
+        <% }) %>
+    </select>
+    </div>
+
+    <div>
+    <label for="leagueId">Liga:</label>
+    <select name="leagueId" id="leagueId">
+        <% leagues.forEach(league => { %>
+        <option value="<%= league._id %>" <%= player.leagueId && player.leagueId._id.equals(league._id) ? 'selected' : '' %>>
+            <%= league.name %>
+        </option>
+        <% }) %>
+    </select>
+    </div>
+
+    <div>
+    <label for="position">Posizioa:</label>
+    <select id="position" name="position">
+      <option value="">-- Aukeratu --</option>
+      <option value="GK" <%= player.position === 'GK' ? 'selected' : '' %>>Atezaina</option>
+      <option value="DF" <%= player.position === 'DF' ? 'selected' : '' %>>Defentsa</option>
+      <option value="MF" <%= player.position === 'MF' ? 'selected' : '' %>>Erdilaria</option>
+      <option value="FW" <%= player.position === 'FW' ? 'selected' : '' %>>Aurrekaria</option>
+    </select>
+    </div>
+
+    <div>
+    <label for="number">Zenbakia:</label>
+    <input type="number" id="number" name="number" min="1" max="99" value="<%= player.number %>" />
+    </div>
+
+    <button type="submit">Gorde Aldaketak</button>
+    <button type="button" id="undo-btn">Aldaketak desegin</button>
+    <a href="/admin/"><button type="button">Itzuli bilaketa orrira</button></a>
+  </form>
+
+  <script>
+    const form = document.getElementById('edit-player-form');
+    const undoBtn = document.getElementById('undo-btn');
+
+    const originalData = new FormData(form);
+
+    undoBtn.addEventListener('click', () => {
+    for (const [name, value] of originalData.entries()) {
+        const field = form.elements[name];
+        if (!field) continue;
+
+        if (field.type === 'checkbox' || field.type === 'radio') {
+        field.checked = (field.value === value);
+        } else {
+        field.value = value;
         }
-        
-        // 2. Actualizar jugador
-        document.getElementById('edit-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const updatedData = {
-                name: document.getElementById('name').value,
-                position: document.getElementById('position').value
-            };
-            
-            try {
-                // CONSUMIR API REST para actualizar
-                await axios.put(`/api/players/${playerId}`, updatedData);
-                
-                document.getElementById('message').innerHTML = 
-                    '<p style="color: green;">Jugador actualizado correctamente</p>';
-                
-            } catch (error) {
-                document.getElementById('message').innerHTML = 
-                    `<p style="color: red;">Error: ${error.response?.data?.message || error.message}</p>`;
-            }
+    }
+    });
+  
+    form.addEventListener('submit', async e => {
+        const confirmed = confirm('Ziur zaude aldaketak gorde nahi dituzula? Ezingo dira desegin.');
+        if (!confirmed) {
+          return;
+        }
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
         });
-        
-        // Cargar datos al iniciar
-        window.onload = loadPlayer;
-    </script>
+        if (response.ok) {
+          alert('Jokalaria eguneratu da!');
+          window.location.href = '/admin/players'; 
+        } else {
+          alert('Errorea eguneratzean');
+        }
+      } catch (error) {
+        alert('Errorea eguneratzean');
+      }
+    });
+  </script>
 </body>
 </html>

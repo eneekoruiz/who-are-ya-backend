@@ -1,96 +1,141 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrar Jugadores</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-        /* Estilos básicos */
-        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
-        .success { background-color: #d4edda; color: #155724; }
-        .error { background-color: #f8d7da; color: #721c24; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buscar Jokalariak</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px;  text-align: center; margin: 20px;  }
+    label { margin-right: 10px; }
+    input, select { margin-right: 20px; padding: 5px; }
+    button { padding: 5px 10px; margin-right: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    .message { margin-top: 15px; color: red; }
+  </style>
 </head>
 <body>
-    <h1>Gestión de Jugadores</h1>
-    
-    <!-- Botón para crear nuevo -->
-    <a href="/admin/players/new">Nuevo Jugador</a>
-    
-    <!-- Mensajes de feedback -->
-    <div id="message-container"></div>
-    
-    <!-- Tabla de jugadores -->
-    <table id="players-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Equipo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Se llenará con JavaScript -->
-        </tbody>
-    </table>
-    
-    <script>
-        // CONSUMIR LA API REST - Esto es lo que significa "consumir el API"
-        
-        // 1. Cargar jugadores al iniciar
-        async function loadPlayers() {
-            try {
-                const response = await axios.get('/api/players');
-                const players = response.data;
-                
-                const tbody = document.querySelector('#players-table tbody');
-                tbody.innerHTML = '';
-                
-                players.forEach(player => {
-                    const row = `
-                        <tr>
-                            <td>${player.id}</td>
-                            <td>${player.name}</td>
-                            <td>${player.team?.name || 'Sin equipo'}</td>
-                            <td>
-                                <a href="/admin/players/edit/${player.id}">Editar</a>
-                                <button onclick="deletePlayer(${player.id})">Eliminar</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            } catch (error) {
-                showMessage('Error cargando jugadores', 'error');
-            }
+  <h1>Jokalariak bilatu</h1>
+
+  <div>
+  <a href="/admin/"><button type="button">Itzuli panelera</button></a>
+  </div>
+
+  <form id="search-form">
+    <label for="name">Izena:</label>
+    <input type="text" id="name" name="name" placeholder="Izena" />
+
+    <label for="team">Taldea:</label>
+    <input type="text" id="team" name="team" placeholder="Taldea" />
+
+    <label for="nationality">Herrialdea:</label>
+    <input type="text" id="nationality" name="nationality" placeholder="Herrialdea" />
+
+    <label for="position">Posizioa:</label>
+    <select id="position" name="position">
+      <option value="">-- Aukeratu --</option>
+      <option value="GK">Atezaina</option>
+      <option value="DF">Defentsa</option>
+      <option value="MF">Erdilaria</option>
+      <option value="FW">Aurrekaria</option>
+    </select>
+
+    <label for="number">Zenbakia:</label>
+    <input type="number" id="number" name="number" min="1" max="99" />
+
+    <button type="submit">Bilatu</button>
+  </form>
+
+  <div id="message" class="message"></div>
+
+  <table id="players-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Izena</th>
+        <th>Taldea</th>
+        <th>Herrialdea</th>
+        <th>Liga</th>
+        <th>Posizioa</th>
+        <th>Zenbakia</th>
+        <th>Ekintzak</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('search-form');
+    const table = document.getElementById('players-table');
+    const tbody = table.querySelector('tbody');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      message.textContent = '';
+      tbody.innerHTML = '';
+      table.style.display = 'none';
+
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+
+      for (const [key, value] of formData.entries()) {
+        if (value.trim() !== '') {
+          params.append(key, value.trim());
         }
-        
-        // 2. Eliminar jugador
-        async function deletePlayer(id) {
-            if (!confirm('¿Seguro que quieres eliminar este jugador?')) return;
-            
-            try {
-                await axios.delete(`/api/players/${id}`);
-                showMessage('Jugador eliminado correctamente', 'success');
-                loadPlayers(); // Recargar la lista
-            } catch (error) {
-                showMessage('Error eliminando jugador', 'error');
-            }
+      }
+
+      try {
+        const response = await axios.get('/api/players?' + params.toString());
+        const players = response.data;
+
+        if (players.length === 0) {
+          message.textContent = 'Ez da jokalaririk aurkitu.';
+          return;
         }
-        
-        // 3. Mostrar mensajes de feedback
-        function showMessage(text, type) {
-            const container = document.getElementById('message-container');
-            container.innerHTML = `
-                <div class="message ${type}">${text}</div>
-            `;
-            setTimeout(() => container.innerHTML = '', 3000);
-        }
-        
-        // Cargar jugadores cuando la página se cargue
-        window.onload = loadPlayers;
-    </script>
+
+        players.forEach(player => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${player.id}</td>
+            <td>${player.name}</td>
+            <td>${player.teamId?.name || 'Talderik ez'}</td>
+            <td>${player.nationality || ''}</td>
+            <td>${player.leagueId?.name || 'Ligarik ez'}</td>
+            <td>${player.position || ''}</td>
+            <td>${player.number || ''}</td>
+            <td>
+              <a href="/admin/players/edit/${player._id}">
+                <button type="button">Editatu</button>
+              </a>
+              <button type="button" onclick="deletePlayer('${player._id}')">Ezabatu</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        table.style.display = 'table';
+
+      } catch (err) {
+        message.textContent = 'Errorea bilatzean.';
+        console.error(err);
+      }
+    });
+
+    async function deletePlayer(id) {
+      if (!confirm('Ziur zaude jokalaria ezabatu nahi duzula?')) return;
+
+      try {
+        await axios.delete(`/api/players/${id}`);
+        message.textContent = 'Jokalaria ezabatuta.';
+        form.dispatchEvent(new Event('submit'));
+      } catch (err) {
+        message.textContent = 'Errorea ezabatzean.';
+        console.error(err);
+      }
+    }
+  </script>
 </body>
 </html>
