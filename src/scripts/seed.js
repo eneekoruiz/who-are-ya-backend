@@ -37,7 +37,7 @@ const seedDatabase = async () => {
 
             if (!teamsMap.has(player.teamId)) {
                 const newTeam = await Team.create({
-                    id: player.teamId.toString(),
+                    id: Number(player.teamId),
                     name: `Team ${player.teamId}`,
                     leagueId: leaguesMap.get(player.leagueId)._id,
                     logoUrl: `/images/leagues/League_${player.leagueId}.png`,
@@ -46,6 +46,7 @@ const seedDatabase = async () => {
                 });
                 teamsMap.set(player.teamId, newTeam);
             }
+
         }
 
         // Jokalarien datuak sortu
@@ -54,7 +55,7 @@ const seedDatabase = async () => {
             const league = leaguesMap.get(player.leagueId);
 
             await Player.create({
-                id: player.id.toString(),
+                id: Number(player.id),
                 name: player.name || '',
                 birthDate: player.birthdate ? new Date(player.birthdate) : null,
                 nationality: player.nationality || '',

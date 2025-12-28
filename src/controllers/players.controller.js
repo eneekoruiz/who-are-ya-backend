@@ -52,13 +52,22 @@ export const getPlayerById = async (req, res) => {
 };
 
 export const createPlayer = async (req, res) => {
-  const lastPlayer = await Player.findOne().sort({ id: -1 });
-  req.body.id = lastPlayer ? lastPlayer.id + 1 : 1;
-  const player = new Player(req.body);
-  console.log('Creating player with data:', req.body);
-  await player.save();
-  res.status(201).json(player);
+  try {
+    const lastPlayer = await Player.findOne().sort({ id: -1 });
+    req.body.id = lastPlayer ? lastPlayer.id + 1 : 1;
+
+    console.log('CREATE PLAYER BODY:', req.body);
+
+    const player = new Player(req.body);
+    await player.save();
+
+    res.status(201).json(player);
+  } catch (error) {
+    console.error('CREATE PLAYER ERROR:', error.message);
+    res.status(500).json({ message: error.message });
+  }
 };
+
 
 export const updatePlayer = async (req, res) => {
   const player = await Player.findByIdAndUpdate(
