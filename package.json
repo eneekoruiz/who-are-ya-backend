@@ -1,14 +1,19 @@
 {
   "name": "who-are-ya-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for the Who Are Ya football guessing game.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "start": "node server.js",
     "seed": "node src/scripts/seed.js"
   },
-  "keywords": [],
+  "keywords": [
+    "football",
+    "express",
+    "mongodb",
+    "guessing-game"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
