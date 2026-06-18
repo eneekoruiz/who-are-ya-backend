@@ -8,7 +8,6 @@ import webRoutes from './routes/web.routes.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { url } from 'inspector';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: 'whoareya-secret', 
+    secret: process.env.SESSION_SECRET || 'local-development-secret',
     resave: false,
     saveUninitialized: false
   })
