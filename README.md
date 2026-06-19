@@ -38,6 +38,10 @@ El comando de carga elimina primero las ligas, equipos y jugadores existentes en
 - `/api/auth`: registro, inicio y cierre de sesion.
 - `/admin`: vistas de administracion protegidas.
 
+## Arquitectura
+
+Express aplica middleware comun y dirige cada solicitud a sus rutas y controladores. Los controladores usan modelos Mongoose para persistir en MongoDB; las vistas EJS de administracion reutilizan ese acceso y las sesiones protegen las operaciones que no son publicas.
+
 ## Documentacion
 
 La [documentacion en DeepWiki](https://deepwiki.com/eneekoruiz/who-are-ya-backend) complementa este README con una vista del codigo y sus relaciones.
